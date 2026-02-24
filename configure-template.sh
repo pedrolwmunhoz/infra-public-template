@@ -17,6 +17,9 @@ DOCKERHUB_USERNAME="your-dockerhub-user"
 DOCKERHUB_REPO_BACK="myservice-api"
 DOCKERHUB_REPO_FRONT="myfront-app"
 DOCKERHUB_TOKEN=""              # opcional: se quiser já injetar o PAT nos arquivos/template
+# Nome do secret no GitHub Actions (workflow: esse placeholder vira o nome do secret)
+GH_SECRET_DOCKERHUB_USER="DOCKERHUB_USERNAME"
+GH_SECRET_DOCKERHUB_TOKEN="DOCKERHUB_TOKEN"
 
 # GitHub (usado tanto para os repos quanto para credencial Git do ArgoCD)
 GITHUB_USER="your-github-username"
@@ -54,6 +57,8 @@ for f in "$BOOT" "$KB/deployment.yaml" "$KB/service.yaml" "$KB/ingress.yaml" \
   sed -i "s|{DOCKERHUB_REPO_BACK}|$DOCKERHUB_REPO_BACK|g" "$f"
   sed -i "s|{DOCKERHUB_REPO_FRONT}|$DOCKERHUB_REPO_FRONT|g" "$f"
   sed -i "s|{DOCKERHUB_TOKEN}|$DOCKERHUB_TOKEN|g" "$f"
+  sed -i "s|{GH_SECRET_DOCKERHUB_USER}|$GH_SECRET_DOCKERHUB_USER|g" "$f"
+  sed -i "s|{GH_SECRET_DOCKERHUB_TOKEN}|$GH_SECRET_DOCKERHUB_TOKEN|g" "$f"
   sed -i "s|{GITHUB_USER}|$GITHUB_USER|g" "$f"
   sed -i "s|{GITHUB_REPO_BACK}|$GITHUB_REPO_BACK|g" "$f"
   sed -i "s|{GITHUB_REPO_FRONT}|$GITHUB_REPO_FRONT|g" "$f"
