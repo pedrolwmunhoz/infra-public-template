@@ -4,6 +4,8 @@ Template público para subir um ambiente completo (k3s, cert‑manager, ArgoCD, 
 
 Este repo foi pensado para alguém clonar, ajustar um único bloco de CONFIG e gerar todos os arquivos finais (bootstrap, k8s, workflows, Dockerfiles) já com os valores reais.
 
+**Ordem ao alterar:** (1) Reverte (2) Sobe (3) Ajusta (4) Testa. Se der erro, reverte e recomeça.
+
 ---
 
 ### 1. Estrutura do repositório
