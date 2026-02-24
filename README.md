@@ -155,7 +155,7 @@ Principais chaves que aparecem nos arquivos:
 6. **Criar DNS A records** apontando `api.{DOMAIN}`, `app.{DOMAIN}`, `argocd.{DOMAIN}`, `grafana.{DOMAIN}` para o IP externo da VM.
 7. **Configurar GitHub Secrets** nos repositórios (`{GITHUB_REPO_BACK}` e, se existir, `{GITHUB_REPO_FRONT}`):
    - manualmente pelo painel do GitHub, **ou**
-   - rodando o script:
+   - rodando o script (em **qualquer máquina** com `gh` instalado e logado no GitHub; não precisa ser na VM):
      ```bash
      chmod +x configure-github-secrets.sh
      ./configure-github-secrets.sh
@@ -165,6 +165,7 @@ Principais chaves que aparecem nos arquivos:
 
 ### 5. Observações importantes
 
+- O `configure-github-secrets.sh` **não precisa rodar na VM**: rode em qualquer máquina onde o `gh` (GitHub CLI) esteja instalado e logado no GitHub; ele só configura os secrets nos repositórios remotos.
 - Os manifests k8s assumem:
   - API escutando em porta **8081** internamente.
   - Frontend escutando em **80** (Nginx ou similar).
