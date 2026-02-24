@@ -43,10 +43,11 @@ KREADME="$ROOT_DIR/k8s/README.md"
 CFGIT="$ROOT_DIR/configure-github-secrets.sh"
 
 # Substitui placeholders {VARIAVEL} pelos valores configurados acima
+# Bootstrap: so a linha DOMAIN= usa placeholder {BASE_DOMAIN}; o resto do script usa $DOMAIN.
 for f in "$BOOT" "$KB/deployment.yaml" "$KB/service.yaml" "$KB/ingress.yaml" \
          "$KF/deployment.yaml" "$KF/service.yaml" "$KF/ingress.yaml" \
          "$WF" "$KREADME" "$CFGIT"; do
-  sed -i "s|{DOMAIN}|$DOMAIN|g" "$f"
+  sed -i "s|{BASE_DOMAIN}|$DOMAIN|g" "$f"
   sed -i "s|{SERVICE_NAME}|$SERVICE_NAME|g" "$f"
   sed -i "s|{FRONT_NAME}|$FRONT_NAME|g" "$f"
   sed -i "s|{DOCKERHUB_USERNAME}|$DOCKERHUB_USERNAME|g" "$f"

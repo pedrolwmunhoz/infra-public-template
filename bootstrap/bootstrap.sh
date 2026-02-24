@@ -5,11 +5,11 @@ SCRIPT_START=$(date +%s)
 # --- CONFIG: altere aqui ---
 
 # Dominio base usado para ArgoCD, Grafana e Apps.
-# Exemplo: se DOMAIN="{DOMAIN}" entao:
-#   - ArgoCD  -> https://argocd.{DOMAIN}
-#   - Grafana -> https://grafana.{DOMAIN}
-#   - API     -> https://api.{DOMAIN}  (ver campo host em ARGO_PROJECTS)
-DOMAIN="{DOMAIN}"
+# Exemplo: se DOMAIN="{BASE_DOMAIN}" entao:
+#   - ArgoCD  -> https://argocd.{BASE_DOMAIN}
+#   - Grafana -> https://grafana.{BASE_DOMAIN}
+#   - API     -> https://api.{BASE_DOMAIN}  (ver campo host em ARGO_PROJECTS)
+DOMAIN="{BASE_DOMAIN}"
 
 # Senha padrao que sera configurada para o usuario admin do ArgoCD.
 # Troque por um valor seguro antes de rodar.

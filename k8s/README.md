@@ -8,20 +8,20 @@ Este `k8s/` é um **template genérico** para uma API (`{SERVICE_NAME}`) e um fr
 2. ArgoCD lê o repo Git com os manifests (`k8s/backend` e `k8s/frontend`) e aplica no cluster (k3s com Traefik).
 
 > **Importante:** o domínio real vem do `DOMAIN` configurado no `bootstrap.sh` genérico  
-> (ex.: `DOMAIN={DOMAIN}` → `api.{DOMAIN}`, `app.{DOMAIN}`).
+> (ex.: `DOMAIN={BASE_DOMAIN}` → `api.{BASE_DOMAIN}`, `app.{BASE_DOMAIN}`).
 
 ## Layout dos manifests
 
 - `backend/` → API (`{SERVICE_NAME}`)
   - `deployment.yaml` → Deployment da API, container porta 8081, image `{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_BACK}:latest`, envs vindas de `{SERVICE_NAME}-secret`.
   - `service.yaml`    → Service ClusterIP `{SERVICE_NAME}`, porta 80 → targetPort 8081.
-  - `ingress.yaml`    → Ingress Traefik para `https://api.{DOMAIN}`.
+  - `ingress.yaml`    → Ingress Traefik para `https://api.{BASE_DOMAIN}`.
   - `rate-limit-middleware.yaml` → Middleware Traefik de rate limit para a API.
 
 - `frontend/` → Frontend (`{FRONT_NAME}`)
   - `deployment.yaml` → Deployment do frontend (Nginx), porta 80, image `{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_FRONT}:latest`.
   - `service.yaml`    → Service ClusterIP `{FRONT_NAME}`, porta 80 → targetPort 80.
-  - `ingress.yaml`    → Ingress Traefik para `https://app.{DOMAIN}`.
+  - `ingress.yaml`    → Ingress Traefik para `https://app.{BASE_DOMAIN}`.
   - `rate-limit-middleware.yaml` → Middleware Traefik de rate limit para o frontend.
 
 > O `Dockerfile.frontend` foi pensado pra **qualquer SPA** (React, Vite, Vue, etc.) que:

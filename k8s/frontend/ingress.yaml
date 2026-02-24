@@ -14,11 +14,11 @@ spec:
   tls:
     - hosts:
         # Host publico do frontend (subdominio app do SEU dominio)
-        # Ex.: se DOMAIN={DOMAIN} -> app.{DOMAIN}
-        - app.{DOMAIN}
-      secretName: app-{DOMAIN}-tls
+        # Ex.: se DOMAIN={BASE_DOMAIN} -> app.{BASE_DOMAIN}
+        - app.{BASE_DOMAIN}
+      secretName: app-{BASE_DOMAIN}-tls
   rules:
-    - host: app.{DOMAIN}
+    - host: app.{BASE_DOMAIN}
       http:
         paths:
           - path: /

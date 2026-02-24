@@ -14,12 +14,12 @@ Este repo foi pensado para alguém clonar, ajustar um único bloco de CONFIG e g
   - `backend/`:
     - `deployment.yaml`: Deployment da API (`{SERVICE_NAME}`), escutando em 8081, imagem `{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_BACK}:latest`.
     - `service.yaml`: Service ClusterIP `{SERVICE_NAME}`, porta 80 → targetPort 8081.
-    - `ingress.yaml`: Ingress Traefik para `https://api.{DOMAIN}`, com TLS gerenciado pelo cert‑manager.
+    - `ingress.yaml`: Ingress Traefik para `https://api.{BASE_DOMAIN}`, com TLS gerenciado pelo cert‑manager.
     - `rate-limit-middleware.yaml`: Middleware de rate limit para a API.
   - `frontend/`:
     - `deployment.yaml`: Deployment do frontend (`{FRONT_NAME}`), porta 80, imagem `{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_FRONT}:latest`.
     - `service.yaml`: Service ClusterIP `{FRONT_NAME}`, porta 80 → targetPort 80.
-    - `ingress.yaml`: Ingress Traefik para `https://app.{DOMAIN}`, com TLS.
+    - `ingress.yaml`: Ingress Traefik para `https://app.{BASE_DOMAIN}`, com TLS.
     - `rate-limit-middleware.yaml`: Middleware de rate limit para o frontend.
   - `README.md`: detalhes do layout e portas internas.
 - `.github/workflows/`
@@ -81,7 +81,7 @@ chmod +x configure-template.sh
 ./configure-template.sh
 ```
 
-Ele vai substituir as chaves `{DOMAIN}`, `{SERVICE_NAME}`, `{FRONT_NAME}`, `{DOCKERHUB_USERNAME}`, `{DOCKERHUB_REPO_BACK}`, `{DOCKERHUB_REPO_FRONT}`, `{DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}`, `{GIT_TOKEN}`, `{ARGOCD_PASS}`, `{GRAFANA_PASS}` nos arquivos:
+Ele vai substituir as chaves `{BASE_DOMAIN}`, `{SERVICE_NAME}`, `{FRONT_NAME}`, `{DOCKERHUB_USERNAME}`, `{DOCKERHUB_REPO_BACK}`, `{DOCKERHUB_REPO_FRONT}`, `{DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}`, `{GIT_TOKEN}`, `{ARGOCD_PASS}`, `{GRAFANA_PASS}` nos arquivos:
 
 - `bootstrap/bootstrap.sh`
 - `k8s/backend/*`
@@ -94,11 +94,11 @@ Ele vai substituir as chaves `{DOMAIN}`, `{SERVICE_NAME}`, `{FRONT_NAME}`, `{DOC
 No `configure-github-secrets.sh` você encontra este bloco:
 
 ```bash
-DOMAIN="{DOMAIN}"
+DOMAIN="{BASE_DOMAIN}"
 ARGOCD_PASSWORD="{ARGOCD_PASS}"          # Senha admin do ArgoCD
 DOCKERHUB_TOKEN="{DOCKERHUB_TOKEN}"      # PAT do Docker Hub (placeholder que o configure-template.sh pode preencher)
 DOCKERHUB_USERNAME="{DOCKERHUB_USERNAME}"
-ARGOCD_SERVER="argocd.{DOMAIN}"
+ARGOCD_SERVER="argocd.{BASE_DOMAIN}"
 
 GITHUB_REPOS=(
   "{GITHUB_USER}/{GITHUB_REPO_BACK}"
@@ -106,7 +106,7 @@ GITHUB_REPOS=(
 )
 ```
 
-As chaves `{DOMAIN}`, `{ARGOCD_PASS}`, `{DOCKERHUB_USERNAME}`, `{DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}` vêm do `configure-template.sh`.  
+As chaves `{BASE_DOMAIN}`, `{ARGOCD_PASS}`, `{DOCKERHUB_USERNAME}`, `{DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}` vêm do `configure-template.sh`.  
 Na prática, esse script pega o **PAT do Docker Hub** e a **senha/token do ArgoCD** e grava tudo como *GitHub Secrets* nos repositórios informados.
 
 ---
@@ -116,9 +116,9 @@ Na prática, esse script pega o **PAT do Docker Hub** e a **senha/token do ArgoC
 Principais chaves que aparecem nos arquivos:
 
 - **Domínio / URLs**
-  - `{DOMAIN}` → domínio base (ex.: `example.com`).
-  - `api.{DOMAIN}` → host público da API.
-  - `app.{DOMAIN}` → host público do frontend.
+  - `{BASE_DOMAIN}` → domínio base (ex.: `example.com`).
+  - `api.{BASE_DOMAIN}` → host público da API.
+  - `app.{BASE_DOMAIN}` → host público do frontend.
 - **Serviços / Apps**
   - `{SERVICE_NAME}` → nome da aplicação backend (Deployment, Service, Application no ArgoCD).
   - `{FRONT_NAME}` → nome da aplicação frontend.
@@ -155,7 +155,7 @@ Principais chaves que aparecem nos arquivos:
    chmod +x bootstrap.sh
    sudo ./bootstrap.sh
    ```
-6. **Criar DNS A records** apontando `api.{DOMAIN}`, `app.{DOMAIN}`, `argocd.{DOMAIN}`, `grafana.{DOMAIN}` para o IP externo da VM.
+6. **Criar DNS A records** apontando `api.{BASE_DOMAIN}`, `app.{BASE_DOMAIN}`, `argocd.{BASE_DOMAIN}`, `grafana.{BASE_DOMAIN}` para o IP externo da VM.
 7. **Configurar GitHub Secrets** nos repositórios (`{GITHUB_REPO_BACK}` e, se existir, `{GITHUB_REPO_FRONT}`):
    - manualmente pelo painel do GitHub, **ou**
    - rodando o script (em **qualquer máquina** com `gh` instalado e logado no GitHub; não precisa ser na VM):

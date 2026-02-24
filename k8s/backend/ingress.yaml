@@ -14,12 +14,12 @@ spec:
   tls:
     - hosts:
         # Host publico da sua API (subdominio api do SEU dominio)
-        # Ex.: se DOMAIN={DOMAIN} -> api.{DOMAIN}
-        - api.{DOMAIN}
+        # Ex.: se DOMAIN={BASE_DOMAIN} -> api.{BASE_DOMAIN}
+        - api.{BASE_DOMAIN}
       # Secret TLS criado pelo cert-manager para este host
-      secretName: api-{DOMAIN}-tls
+      secretName: api-{BASE_DOMAIN}-tls
   rules:
-    - host: api.{DOMAIN}
+    - host: api.{BASE_DOMAIN}
       http:
         paths:
           - path: /
