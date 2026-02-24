@@ -24,6 +24,11 @@ Este `k8s/` é um **template genérico** para uma API (`myservice-api`) e um fro
   - `ingress.yaml`    → Ingress Traefik para `https://app.seudominio.com`.
   - `rate-limit-middleware.yaml` → Middleware Traefik de rate limit para o frontend.
 
+> O `Dockerfile.frontend` foi pensado pra **qualquer SPA** (React, Vite, Vue, etc.) que:
+> - tenha script `npm run build`, e
+> - gere os arquivos estáticos em `dist/`.  
+> Se o seu build gerar em outra pasta (ex.: `build/` do CRA), é só ajustar o caminho do `COPY` no Dockerfile.
+
 ## Services e portas
 
 - **API (`myservice-api`):**
