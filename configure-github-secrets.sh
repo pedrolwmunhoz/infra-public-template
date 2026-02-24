@@ -9,7 +9,7 @@ set -euo pipefail
 # --- CONFIG: preencha antes de rodar ---
 DOMAIN="{DOMAIN}"
 ARGOCD_PASSWORD="{ARGOCD_PASS}"          # Senha admin do ArgoCD
-DOCKERHUB_TOKEN=""                       # Personal Access Token do Docker Hub
+DOCKERHUB_TOKEN="{DOCKERHUB_TOKEN}"      # Personal Access Token do Docker Hub (placeholder para o configure-template.sh)
 DOCKERHUB_USERNAME="{DOCKERHUB_USERNAME}"
 ARGOCD_SERVER="argocd.{DOMAIN}"
 

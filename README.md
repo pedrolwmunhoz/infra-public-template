@@ -38,7 +38,7 @@ Este repo foi pensado para alguém clonar, ajustar um único bloco de CONFIG e g
 - `configure-template.sh`
   - script que lê o bloco de CONFIG do topo e substitui **todas** as chaves `{VARIAVEL}` nos arquivos do repo.
 - `configure-github-secrets.sh`
-  - script opcional para criar/atualizar os GitHub Secrets (Docker Hub + ArgoCD) nos repositórios `{GITHUB_REPO_BACK}` e `{GITHUB_REPO_FRONT}` usando a CLI `gh`.
+  - script opcional para criar/atualizar os GitHub Secrets (Docker Hub + ArgoCD), inserindo seus **personal tokens/senhas** nesses secrets nos repositórios `{GITHUB_REPO_BACK}` e `{GITHUB_REPO_FRONT}` usando a CLI `gh`.
 
 ---
 
@@ -61,11 +61,13 @@ FRONT_NAME="myfront-app"       # frontend
 DOCKERHUB_USERNAME="your-dockerhub-user"
 DOCKERHUB_REPO_BACK="myservice-api"
 DOCKERHUB_REPO_FRONT="myfront-app"
+DOCKERHUB_TOKEN=""              # PAT do Docker Hub (opcional: se quiser que o template injete essa chave também)
 
 # GitHub
 GITHUB_USER="your-github-username"
 GITHUB_REPO_BACK="myservice-api"
 GITHUB_REPO_FRONT=""           # opcional: se tiver repo separado do frontend
+GIT_TOKEN=""                   # opcional: PAT do GitHub que o ArgoCD usará para acessar repos privados
 
 # Senhas
 ARGOCD_PASS="CHANGE_ME_ADMIN_PASSWORD"
@@ -79,7 +81,7 @@ chmod +x configure-template.sh
 ./configure-template.sh
 ```
 
-Ele vai substituir as chaves `{DOMAIN}`, `{SERVICE_NAME}`, `{FRONT_NAME}`, `{DOCKERHUB_USERNAME}`, `{DOCKERHUB_REPO_BACK}`, `{DOCKERHUB_REPO_FRONT}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}`, `{ARGOCD_PASS}`, `{GRAFANA_PASS}` (e, quando usado, `{DOCKERHUB_TOKEN}`) nos arquivos:
+Ele vai substituir as chaves `{DOMAIN}`, `{SERVICE_NAME}`, `{FRONT_NAME}`, `{DOCKERHUB_USERNAME}`, `{DOCKERHUB_REPO_BACK}`, `{DOCKERHUB_REPO_FRONT}`, `{DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}`, `{GIT_TOKEN}`, `{ARGOCD_PASS}`, `{GRAFANA_PASS}` nos arquivos:
 
 - `bootstrap/bootstrap.sh`
 - `k8s/backend/*`
@@ -94,7 +96,7 @@ No `configure-github-secrets.sh` você encontra este bloco:
 ```bash
 DOMAIN="{DOMAIN}"
 ARGOCD_PASSWORD="{ARGOCD_PASS}"          # Senha admin do ArgoCD
-DOCKERHUB_TOKEN=""                       # PAT do Docker Hub (você preenche aqui)
+DOCKERHUB_TOKEN="{DOCKERHUB_TOKEN}"      # PAT do Docker Hub (placeholder que o configure-template.sh pode preencher)
 DOCKERHUB_USERNAME="{DOCKERHUB_USERNAME}"
 ARGOCD_SERVER="argocd.{DOMAIN}"
 
@@ -104,8 +106,8 @@ GITHUB_REPOS=(
 )
 ```
 
-As chaves `{DOMAIN}`, `{ARGOCD_PASS}`, `{DOCKERHUB_USERNAME}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}` vêm do `configure-template.sh`.  
-Você só precisa preencher **DOCKERHUB_TOKEN** com o seu PAT real do Docker Hub (e ajustar/remover linhas de `GITHUB_REPOS` se necessário).
+As chaves `{DOMAIN}`, `{ARGOCD_PASS}`, `{DOCKERHUB_USERNAME}`, `{DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}` vêm do `configure-template.sh`.  
+Na prática, esse script pega o **PAT do Docker Hub** e a **senha/token do ArgoCD** e grava tudo como *GitHub Secrets* nos repositórios informados.
 
 ---
 
@@ -128,6 +130,7 @@ Principais chaves que aparecem nos arquivos:
   - `{GITHUB_USER}` → dono dos repositórios no GitHub.
   - `{GITHUB_REPO_BACK}` → repo backend que contém a pasta `k8s/backend`.
   - `{GITHUB_REPO_FRONT}` → repo frontend (separado), que contém `k8s/frontend` (opcional).
+  - `{GIT_TOKEN}` → PAT do GitHub usado pelo ArgoCD para acessar repos privados.
 - **Senhas**
   - `{ARGOCD_PASS}` → senha padrão do usuário `admin` do ArgoCD.
   - `{GRAFANA_PASS}` → senha padrão do `admin` do Grafana.
