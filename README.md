@@ -12,12 +12,12 @@ Este repo foi pensado para alguém clonar, ajustar um único bloco de CONFIG e g
   - `bootstrap.sh`: script principal que sobe k3s, cert‑manager, ArgoCD, Prometheus/Grafana, secrets de Docker/Git e cria as Applications no ArgoCD com base em `ARGO_PROJECTS`.
 - `k8s/`
   - `backend/`:
-    - `deployment.yaml`: Deployment da API (`{SERVICE_NAME}`), escutando em 8081, imagem `{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_BACK}:latest`.
+    - `deployment.yaml`: Deployment da API (`{SERVICE_NAME}`), escutando em 8081, imagem `{GH_SECRET_DOCKERHUB_USER}/{DOCKERHUB_REPO_BACK}:latest`.
     - `service.yaml`: Service ClusterIP `{SERVICE_NAME}`, porta 80 → targetPort 8081.
     - `ingress.yaml`: Ingress Traefik para `https://api.{BASE_DOMAIN}`, com TLS gerenciado pelo cert‑manager.
     - `rate-limit-middleware.yaml`: Middleware de rate limit para a API.
   - `frontend/`:
-    - `deployment.yaml`: Deployment do frontend (`{FRONT_NAME}`), porta 80, imagem `{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_FRONT}:latest`.
+    - `deployment.yaml`: Deployment do frontend (`{FRONT_NAME}`), porta 80, imagem `{GH_SECRET_DOCKERHUB_USER}/{DOCKERHUB_REPO_FRONT}:latest`.
     - `service.yaml`: Service ClusterIP `{FRONT_NAME}`, porta 80 → targetPort 80.
     - `ingress.yaml`: Ingress Traefik para `https://app.{BASE_DOMAIN}`, com TLS.
     - `rate-limit-middleware.yaml`: Middleware de rate limit para o frontend.
@@ -25,7 +25,7 @@ Este repo foi pensado para alguém clonar, ajustar um único bloco de CONFIG e g
 - `.github/workflows/`
   - `docker-build.yml`: pipeline genérico de CI/CD que:
     - faz login no Docker Hub usando secrets,
-    - builda/pusha a imagem `{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_BACK}:tag`,
+    - builda/pusha a imagem `{GH_SECRET_DOCKERHUB_USER}/{DOCKERHUB_REPO_BACK}:tag`,
     - chama o ArgoCD para dar sync na app `{SERVICE_NAME}`.
 - `docker/`
   - `backend/`:
@@ -58,10 +58,10 @@ SERVICE_NAME="myservice-api"   # backend
 FRONT_NAME="myfront-app"       # frontend
 
 # Docker Hub
-DOCKERHUB_USERNAME="your-dockerhub-user"
+GH_SECRET_DOCKERHUB_USER="your-dockerhub-user"
 DOCKERHUB_REPO_BACK="myservice-api"
 DOCKERHUB_REPO_FRONT="myfront-app"
-DOCKERHUB_TOKEN=""              # PAT do Docker Hub para imagens privadas
+GH_SECRET_DOCKERHUB_TOKEN=""    # PAT do Docker Hub (para configure-github-secrets e imagens privadas)
 
 # GitHub
 GITHUB_USER="your-github-username"
@@ -81,7 +81,7 @@ chmod +x configure-template.sh
 ./configure-template.sh
 ```
 
-Ele vai substituir as chaves `{BASE_DOMAIN}`, `{SERVICE_NAME}`, `{FRONT_NAME}`, `{DOCKERHUB_USERNAME}`, `{DOCKERHUB_REPO_BACK}`, `{DOCKERHUB_REPO_FRONT}`, `{DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}`, `{GIT_TOKEN}`, `{ARGOCD_PASS}`, `{GRAFANA_PASS}` nos arquivos:
+Ele vai substituir as chaves `{BASE_DOMAIN}`, `{SERVICE_NAME}`, `{FRONT_NAME}`, `{GH_SECRET_DOCKERHUB_USER}`, `{DOCKERHUB_REPO_BACK}`, `{DOCKERHUB_REPO_FRONT}`, `{GH_SECRET_DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}`, `{GIT_TOKEN}`, `{ARGOCD_PASS}`, `{GRAFANA_PASS}` nos arquivos:
 
 - `bootstrap/bootstrap.sh`
 - `k8s/backend/*`
@@ -96,8 +96,8 @@ No `configure-github-secrets.sh` você encontra este bloco:
 ```bash
 DOMAIN="{BASE_DOMAIN}"
 ARGOCD_PASSWORD="{ARGOCD_PASS}"          # Senha admin do ArgoCD
-DOCKERHUB_TOKEN="{DOCKERHUB_TOKEN}"      # PAT do Docker Hub (placeholder que o configure-template.sh pode preencher)
-DOCKERHUB_USERNAME="{DOCKERHUB_USERNAME}"
+DOCKERHUB_TOKEN="{GH_SECRET_DOCKERHUB_TOKEN}"   # PAT (configure-template.sh injeta o valor)
+DOCKERHUB_USERNAME="{GH_SECRET_DOCKERHUB_USER}"
 ARGOCD_SERVER="argocd.{BASE_DOMAIN}"
 
 GITHUB_REPOS=(
@@ -106,7 +106,7 @@ GITHUB_REPOS=(
 )
 ```
 
-As chaves `{BASE_DOMAIN}`, `{ARGOCD_PASS}`, `{DOCKERHUB_USERNAME}`, `{DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}` vêm do `configure-template.sh`.  
+As chaves `{BASE_DOMAIN}`, `{ARGOCD_PASS}`, `{GH_SECRET_DOCKERHUB_USER}`, `{GH_SECRET_DOCKERHUB_TOKEN}`, `{GITHUB_USER}`, `{GITHUB_REPO_BACK}`, `{GITHUB_REPO_FRONT}` vêm do `configure-template.sh`.  
 Na prática, esse script pega o **PAT do Docker Hub** e a **senha/token do ArgoCD** e grava tudo como *GitHub Secrets* nos repositórios informados.
 
 ---
@@ -123,7 +123,7 @@ Principais chaves que aparecem nos arquivos:
   - `{SERVICE_NAME}` → nome da aplicação backend (Deployment, Service, Application no ArgoCD).
   - `{FRONT_NAME}` → nome da aplicação frontend.
 - **Docker Hub**
-  - `{DOCKERHUB_USERNAME}` → usuário do Docker Hub.
+  - `{GH_SECRET_DOCKERHUB_USER}` → usuário do Docker Hub.
   - `{DOCKERHUB_REPO_BACK}` → nome do repositório da imagem backend.
   - `{DOCKERHUB_REPO_FRONT}` → nome do repositório da imagem frontend.
 - **GitHub**

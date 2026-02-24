@@ -20,11 +20,11 @@ GRAFANA_ADMIN_PASSWORD="{GRAFANA_PASS}"
 
 # Usuario do Docker Hub que vai receber as imagens da sua app.
 # O workflow do GitHub usa este usuario para fazer push da imagem.
-DOCKERHUB_USERNAME="{DOCKERHUB_USERNAME}"
+DOCKERHUB_USERNAME="{GH_SECRET_DOCKERHUB_USER}"
 
 # Token (Personal Access Token) do Docker Hub.
 # Deixe vazio se as imagens forem publicas.
-DOCKERHUB_TOKEN="{DOCKERHUB_TOKEN}"           # opcional: token do Docker Hub (se imagens privadas)
+DOCKERHUB_TOKEN="{GH_SECRET_DOCKERHUB_TOKEN}"           # opcional: token do Docker Hub (se imagens privadas)
 
 # Credenciais Git para o ArgoCD acessar repositorios privados.
 # Se seus repositorios forem publicos, pode deixar em branco.

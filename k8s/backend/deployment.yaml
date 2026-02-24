@@ -18,7 +18,7 @@ spec:
       containers:
         - name: {SERVICE_NAME}
           # Imagem Docker da sua aplicacao (ajuste usuario/repositorio)
-          image: {DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_BACK}:latest
+          image: {GH_SECRET_DOCKERHUB_USER}/{DOCKERHUB_REPO_BACK}:latest
           imagePullPolicy: Always
           ports:
             - name: http

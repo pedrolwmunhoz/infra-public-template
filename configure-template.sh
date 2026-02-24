@@ -12,14 +12,12 @@ DOMAIN="seudominio.com"
 SERVICE_NAME="myservice-api"   # backend
 FRONT_NAME="myfront-app"       # frontend
 
-# Docker Hub
-DOCKERHUB_USERNAME="your-dockerhub-user"
+# Docker Hub (username = valor; workflow usa nome fixo secrets.DOCKERHUB_USERNAME)
+GH_SECRET_DOCKERHUB_USER="your-dockerhub-user"
 DOCKERHUB_REPO_BACK="myservice-api"
 DOCKERHUB_REPO_FRONT="myfront-app"
-DOCKERHUB_TOKEN=""              # opcional: se quiser já injetar o PAT nos arquivos/template
-# Nome do secret no GitHub Actions (workflow: esse placeholder vira o nome do secret)
-GH_SECRET_DOCKERHUB_USER="DOCKERHUB_USERNAME"
-GH_SECRET_DOCKERHUB_TOKEN="DOCKERHUB_TOKEN"
+# Token (PAT) — placeholder {GH_SECRET_DOCKERHUB_TOKEN} recebe esse valor
+GH_SECRET_DOCKERHUB_TOKEN=""    # preencha o PAT
 
 # GitHub (usado tanto para os repos quanto para credencial Git do ArgoCD)
 GITHUB_USER="your-github-username"
@@ -53,12 +51,12 @@ for f in "$BOOT" "$KB/deployment.yaml" "$KB/service.yaml" "$KB/ingress.yaml" \
   sed -i "s|{BASE_DOMAIN}|$DOMAIN|g" "$f"
   sed -i "s|{SERVICE_NAME}|$SERVICE_NAME|g" "$f"
   sed -i "s|{FRONT_NAME}|$FRONT_NAME|g" "$f"
-  sed -i "s|{DOCKERHUB_USERNAME}|$DOCKERHUB_USERNAME|g" "$f"
+  if [ "$f" != "$WF" ]; then
+    sed -i "s|{GH_SECRET_DOCKERHUB_USER}|$GH_SECRET_DOCKERHUB_USER|g" "$f"
+    sed -i "s|{GH_SECRET_DOCKERHUB_TOKEN}|$GH_SECRET_DOCKERHUB_TOKEN|g" "$f"
+  fi
   sed -i "s|{DOCKERHUB_REPO_BACK}|$DOCKERHUB_REPO_BACK|g" "$f"
   sed -i "s|{DOCKERHUB_REPO_FRONT}|$DOCKERHUB_REPO_FRONT|g" "$f"
-  sed -i "s|{DOCKERHUB_TOKEN}|$DOCKERHUB_TOKEN|g" "$f"
-  sed -i "s|{GH_SECRET_DOCKERHUB_USER}|$GH_SECRET_DOCKERHUB_USER|g" "$f"
-  sed -i "s|{GH_SECRET_DOCKERHUB_TOKEN}|$GH_SECRET_DOCKERHUB_TOKEN|g" "$f"
   sed -i "s|{GITHUB_USER}|$GITHUB_USER|g" "$f"
   sed -i "s|{GITHUB_REPO_BACK}|$GITHUB_REPO_BACK|g" "$f"
   sed -i "s|{GITHUB_REPO_FRONT}|$GITHUB_REPO_FRONT|g" "$f"
@@ -71,4 +69,4 @@ echo "OK. Template configurado com:"
 echo "  DOMAIN         = $DOMAIN"
 echo "  SERVICE_NAME   = $SERVICE_NAME"
 echo "  FRONT_NAME     = $FRONT_NAME"
-echo "  DOCKERHUB_USER = $DOCKERHUB_USERNAME"
+echo "  DOCKERHUB_USER = $GH_SECRET_DOCKERHUB_USER"

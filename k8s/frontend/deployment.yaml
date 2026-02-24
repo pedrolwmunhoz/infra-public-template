@@ -18,7 +18,7 @@ spec:
       containers:
         - name: {FRONT_NAME}
           # Imagem Docker do frontend (ajuste usuario/repositorio)
-          image: {DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_FRONT}:latest
+          image: {GH_SECRET_DOCKERHUB_USER}/{DOCKERHUB_REPO_FRONT}:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80
