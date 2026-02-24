@@ -65,6 +65,9 @@ for f in "$BOOT" "$KB/deployment.yaml" "$KB/service.yaml" "$KB/ingress.yaml" \
   sed -i "s|{GRAFANA_PASS}|$GRAFANA_PASS|g" "$f"
 done
 
+# Workflow: garante substituicao (caminho relativo ao repo)
+(cd "$ROOT_DIR" && sed -i "s|{SERVICE_NAME}|$SERVICE_NAME|g" .github/workflows/docker-build.yml && sed -i "s|{DOCKERHUB_REPO_BACK}|$DOCKERHUB_REPO_BACK|g" .github/workflows/docker-build.yml)
+
 echo "OK. Template configurado com:"
 echo "  DOMAIN         = $DOMAIN"
 echo "  SERVICE_NAME   = $SERVICE_NAME"
