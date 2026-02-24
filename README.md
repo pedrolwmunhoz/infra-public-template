@@ -1,6 +1,6 @@
 ## Infra Public Template
 
-Template público para subir um ambiente completo (k3s, cert‑manager, ArgoCD, Prometheus/Grafana + apps) usando o mesmo modelo do seu projeto original, mas 100% parametrizado com **chaves `{VARIAVEL}`**.
+Template público para subir um ambiente completo (k3s, cert‑manager, ArgoCD, Prometheus/Grafana + apps) totalmente parametrizado com **chaves `{VARIAVEL}`**.
 
 Este repo foi pensado para alguém clonar, ajustar um único bloco de CONFIG e gerar todos os arquivos finais (bootstrap, k8s, workflows, Dockerfiles) já com os valores reais.
 
