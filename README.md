@@ -61,7 +61,7 @@ FRONT_NAME="myfront-app"       # frontend
 DOCKERHUB_USERNAME="your-dockerhub-user"
 DOCKERHUB_REPO_BACK="myservice-api"
 DOCKERHUB_REPO_FRONT="myfront-app"
-DOCKERHUB_TOKEN=""              # PAT do Docker Hub (opcional: se quiser que o template injete essa chave também)
+DOCKERHUB_TOKEN=""              # PAT do Docker Hub para imagens privadas
 
 # GitHub
 GITHUB_USER="your-github-username"
