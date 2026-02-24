@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Nome da Deployment da sua aplicacao backend
+  name: myservice-api
+  labels:
+    app: myservice-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myservice-api
+  template:
+    metadata:
+      labels:
+        app: myservice-api
+    spec:
+      containers:
+        - name: myservice-api
+          # Imagem Docker da sua aplicacao (ajuste usuario/repositorio)
+          image: your-dockerhub-user/myservice-api:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8081
+          env:
+            - name: PORT
+              value: "8081"
+            # Exemplos de variaveis de ambiente vindo de um Secret.
+            # Ajuste os nomes/chaves conforme seu Secret.
+            - name: SPRING_DATASOURCE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: myservice-api-secret
+                  key: spring.datasource.url
+            - name: SPRING_DATASOURCE_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: myservice-api-secret
+                  key: spring.datasource.username
+            - name: SPRING_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: myservice-api-secret
+                  key: spring.datasource.password
+            - name: APP_CERTIFICADO_ENCRYPTION_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: myservice-api-secret
+                  key: app.certificado.encryption-key
+                  optional: true
+          resources:
+            requests:
+              memory: "384Mi"
+              cpu: "100m"
+            limits:
+              memory: "768Mi"
+              cpu: "500m"
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8081
+            periodSeconds: 10

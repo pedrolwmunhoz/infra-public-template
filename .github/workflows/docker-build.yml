@@ -1,0 +1,77 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    name: "1 - Build & Push Docker"
+    runs-on: ubuntu-latest
+    outputs:
+      image-tag: ${{ github.sha }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push imagem
+        uses: docker/build-push-action@v6
+        with:
+          # Pasta do Dockerfile (raiz do repo)
+          context: .
+          push: true
+          tags: |
+            # Imagem enviada para o Docker Hub (ajuste nome do repo)
+            ${{ secrets.DOCKERHUB_USERNAME }}/myservice-api:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/myservice-api:${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: "2 - Deploy ArgoCD (myservice-api)"
+    needs: build-and-push
+    if: always() && needs.build-and-push.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install ArgoCD CLI
+        run: |
+          curl -sSL -o argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          chmod +x argocd
+          sudo mv argocd /usr/local/bin/
+
+      - name: Login no ArgoCD
+        run: |
+          argocd login ${{ secrets.ARGOCD_SERVER }} \
+            --username admin \
+            --password '${{ secrets.ARGOCD_AUTH_TOKEN }}' \
+            --insecure \
+            --grpc-web
+
+      - name: Sync da Application (myservice-api)
+        run: |
+          argocd app sync myservice-api \
+            --grpc-web \
+            --force \
+            --prune
+
+      - name: Aguardar deploy saudável (myservice-api)
+        run: |
+          argocd app wait myservice-api \
+            --grpc-web \
+            --health \
+            --timeout 300
+
+      - name: Status final (myservice-api)
+        if: always()
+        run: |
+          argocd app get myservice-api --grpc-web || true

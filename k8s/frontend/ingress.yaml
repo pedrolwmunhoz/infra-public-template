@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  # Ingress HTTP/HTTPS do frontend
+  name: myfront-app
+  labels:
+    app: myfront-app
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.middlewares: default-rate-limit@kubernetescrd
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts:
+        # Host publico do frontend (subdominio app do SEU dominio)
+        # Ex.: se DOMAIN=seudominio.com -> app.seudominio.com
+        - app.seudominio.com
+      secretName: app-seudominio-com-tls
+  rules:
+    - host: app.seudominio.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: myfront-app
+                port:
+                  number: 80
