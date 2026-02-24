@@ -2,23 +2,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # Nome da Deployment da sua aplicacao backend
-  name: myservice-api
+  name: {SERVICE_NAME}
   labels:
-    app: myservice-api
+    app: {SERVICE_NAME}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: myservice-api
+      app: {SERVICE_NAME}
   template:
     metadata:
       labels:
-        app: myservice-api
+        app: {SERVICE_NAME}
     spec:
       containers:
-        - name: myservice-api
+        - name: {SERVICE_NAME}
           # Imagem Docker da sua aplicacao (ajuste usuario/repositorio)
-          image: your-dockerhub-user/myservice-api:latest
+          image: {DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_BACK}:latest
           imagePullPolicy: Always
           ports:
             - name: http
@@ -31,22 +31,22 @@ spec:
             - name: SPRING_DATASOURCE_URL
               valueFrom:
                 secretKeyRef:
-                  name: myservice-api-secret
+                  name: {SERVICE_NAME}-secret
                   key: spring.datasource.url
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: myservice-api-secret
+                  name: {SERVICE_NAME}-secret
                   key: spring.datasource.username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: myservice-api-secret
+                  name: {SERVICE_NAME}-secret
                   key: spring.datasource.password
             - name: APP_CERTIFICADO_ENCRYPTION_KEY
               valueFrom:
                 secretKeyRef:
-                  name: myservice-api-secret
+                  name: {SERVICE_NAME}-secret
                   key: app.certificado.encryption-key
                   optional: true
           resources:

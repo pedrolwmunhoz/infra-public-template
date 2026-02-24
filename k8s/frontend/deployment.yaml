@@ -2,23 +2,23 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   # Deployment do frontend (SPA/NGINX, etc.)
-  name: myfront-app
+  name: {FRONT_NAME}
   labels:
-    app: myfront-app
+    app: {FRONT_NAME}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: myfront-app
+      app: {FRONT_NAME}
   template:
     metadata:
       labels:
-        app: myfront-app
+        app: {FRONT_NAME}
     spec:
       containers:
-        - name: myfront-app
+        - name: {FRONT_NAME}
           # Imagem Docker do frontend (ajuste usuario/repositorio)
-          image: your-dockerhub-user/my-frontend:latest
+          image: {DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_FRONT}:latest
           imagePullPolicy: Always
           ports:
             - containerPort: 80

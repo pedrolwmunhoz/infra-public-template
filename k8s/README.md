@@ -1,27 +1,27 @@
 # Deploy de exemplo no Kubernetes (ArgoCD + Docker Hub)
 
-Este `k8s/` é um **template genérico** para uma API (`myservice-api`) e um frontend (`myfront-app`).
+Este `k8s/` é um **template genérico** para uma API (`{SERVICE_NAME}`) e um frontend (`{FRONT_NAME}`).
 
 ## Fluxo resumido
 
-1. Push em `main` no repositório da app → GitHub Actions builda a imagem e envia para **Docker Hub** (`your-dockerhub-user/myservice-api:tag`).
+1. Push em `main` no repositório da app → GitHub Actions builda a imagem e envia para **Docker Hub** (`{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_BACK}:tag`).
 2. ArgoCD lê o repo Git com os manifests (`k8s/backend` e `k8s/frontend`) e aplica no cluster (k3s com Traefik).
 
 > **Importante:** o domínio real vem do `DOMAIN` configurado no `bootstrap.sh` genérico  
-> (ex.: `DOMAIN=seudominio.com` → `api.seudominio.com`, `app.seudominio.com`).
+> (ex.: `DOMAIN={DOMAIN}` → `api.{DOMAIN}`, `app.{DOMAIN}`).
 
 ## Layout dos manifests
 
-- `backend/` → API (`myservice-api`)
-  - `deployment.yaml` → Deployment da API, container porta 8081, image `your-dockerhub-user/myservice-api:latest`, envs vindas de `myservice-api-secret`.
-  - `service.yaml`    → Service ClusterIP `myservice-api`, porta 80 → targetPort 8081.
-  - `ingress.yaml`    → Ingress Traefik para `https://api.seudominio.com`.
+- `backend/` → API (`{SERVICE_NAME}`)
+  - `deployment.yaml` → Deployment da API, container porta 8081, image `{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_BACK}:latest`, envs vindas de `{SERVICE_NAME}-secret`.
+  - `service.yaml`    → Service ClusterIP `{SERVICE_NAME}`, porta 80 → targetPort 8081.
+  - `ingress.yaml`    → Ingress Traefik para `https://api.{DOMAIN}`.
   - `rate-limit-middleware.yaml` → Middleware Traefik de rate limit para a API.
 
-- `frontend/` → Frontend (`myfront-app`)
-  - `deployment.yaml` → Deployment do frontend (Nginx), porta 80, image `your-dockerhub-user/myfront-app:latest`.
-  - `service.yaml`    → Service ClusterIP `myfront-app`, porta 80 → targetPort 80.
-  - `ingress.yaml`    → Ingress Traefik para `https://app.seudominio.com`.
+- `frontend/` → Frontend (`{FRONT_NAME}`)
+  - `deployment.yaml` → Deployment do frontend (Nginx), porta 80, image `{DOCKERHUB_USERNAME}/{DOCKERHUB_REPO_FRONT}:latest`.
+  - `service.yaml`    → Service ClusterIP `{FRONT_NAME}`, porta 80 → targetPort 80.
+  - `ingress.yaml`    → Ingress Traefik para `https://app.{DOMAIN}`.
   - `rate-limit-middleware.yaml` → Middleware Traefik de rate limit para o frontend.
 
 > O `Dockerfile.frontend` foi pensado pra **qualquer SPA** (React, Vite, Vue, etc.) que:
@@ -31,11 +31,11 @@ Este `k8s/` é um **template genérico** para uma API (`myservice-api`) e um fro
 
 ## Services e portas
 
-- **API (`myservice-api`):**
+- **API (`{SERVICE_NAME}`):**
   - Container: escuta em **8081**
   - Service: expõe **80** e encaminha para `targetPort: 8081`
 
-- **Frontend (`myfront-app`):**
+- **Frontend (`{FRONT_NAME}`):**
   - Container: escuta em **80** (Nginx)
   - Service: expõe **80** e encaminha para `targetPort: 80`
 

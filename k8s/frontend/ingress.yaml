@@ -2,9 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   # Ingress HTTP/HTTPS do frontend
-  name: myfront-app
+  name: {FRONT_NAME}
   labels:
-    app: myfront-app
+    app: {FRONT_NAME}
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.middlewares: default-rate-limit@kubernetescrd
@@ -14,17 +14,17 @@ spec:
   tls:
     - hosts:
         # Host publico do frontend (subdominio app do SEU dominio)
-        # Ex.: se DOMAIN=seudominio.com -> app.seudominio.com
-        - app.seudominio.com
-      secretName: app-seudominio-com-tls
+        # Ex.: se DOMAIN={DOMAIN} -> app.{DOMAIN}
+        - app.{DOMAIN}
+      secretName: app-{DOMAIN}-tls
   rules:
-    - host: app.seudominio.com
+    - host: app.{DOMAIN}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: myfront-app
+                name: {FRONT_NAME}
                 port:
                   number: 80

@@ -2,9 +2,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   # Ingress HTTP/HTTPS apontando para o Service da aplicacao backend
-  name: myservice-api
+  name: {SERVICE_NAME}
   labels:
-    app: myservice-api
+    app: {SERVICE_NAME}
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
     traefik.ingress.kubernetes.io/router.middlewares: default-rate-limit@kubernetescrd
@@ -14,18 +14,18 @@ spec:
   tls:
     - hosts:
         # Host publico da sua API (subdominio api do SEU dominio)
-        # Ex.: se DOMAIN=seudominio.com -> api.seudominio.com
-        - api.seudominio.com
+        # Ex.: se DOMAIN={DOMAIN} -> api.{DOMAIN}
+        - api.{DOMAIN}
       # Secret TLS criado pelo cert-manager para este host
-      secretName: api-seudominio-com-tls
+      secretName: api-{DOMAIN}-tls
   rules:
-    - host: api.seudominio.com
+    - host: api.{DOMAIN}
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: myservice-api
+                name: {SERVICE_NAME}
                 port:
                   number: 80

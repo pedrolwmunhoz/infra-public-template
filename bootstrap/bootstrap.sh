@@ -5,31 +5,31 @@ SCRIPT_START=$(date +%s)
 # --- CONFIG: altere aqui ---
 
 # Dominio base usado para ArgoCD, Grafana e Apps.
-# Exemplo: se DOMAIN="example.com" entao:
-#   - ArgoCD  -> https://argocd.example.com
-#   - Grafana -> https://grafana.example.com
-#   - API     -> https://api.example.com  (ver campo host em ARGO_PROJECTS)
-DOMAIN="example.com"
+# Exemplo: se DOMAIN="{DOMAIN}" entao:
+#   - ArgoCD  -> https://argocd.{DOMAIN}
+#   - Grafana -> https://grafana.{DOMAIN}
+#   - API     -> https://api.{DOMAIN}  (ver campo host em ARGO_PROJECTS)
+DOMAIN="{DOMAIN}"
 
 # Senha padrao que sera configurada para o usuario admin do ArgoCD.
 # Troque por um valor seguro antes de rodar.
-ARGOCD_SENHA_PADRAO="CHANGE_ME_ADMIN_PASSWORD"
+ARGOCD_SENHA_PADRAO="{ARGOCD_PASS}"
 
 # Senha padrao do usuario admin do Grafana.
-GRAFANA_ADMIN_PASSWORD="CHANGE_ME_GRAFANA_PASSWORD"
+GRAFANA_ADMIN_PASSWORD="{GRAFANA_PASS}"
 
 # Usuario do Docker Hub que vai receber as imagens da sua app.
 # O workflow do GitHub usa este usuario para fazer push da imagem.
-DOCKERHUB_USERNAME="your-dockerhub-user"
+DOCKERHUB_USERNAME="{DOCKERHUB_USERNAME}"
 
 # Token (Personal Access Token) do Docker Hub.
 # Deixe vazio se as imagens forem publicas.
-DOCKERHUB_TOKEN=""           # opcional: token do Docker Hub (se imagens privadas)
+DOCKERHUB_TOKEN="{DOCKERHUB_TOKEN}"           # opcional: token do Docker Hub (se imagens privadas)
 
 # Credenciais Git para o ArgoCD acessar repositorios privados.
 # Se seus repositorios forem publicos, pode deixar em branco.
-GIT_USERNAME="your-github-username"
-GIT_TOKEN=""                 # opcional: PAT do GitHub (se repos privados)
+GIT_USERNAME="{GITHUB_USER}"
+GIT_TOKEN="{GIT_TOKEN}"                 # opcional: PAT do GitHub (se repos privados)
 
 # Projetos ArgoCD:
 #   formato: nome|repoURL|path|targetRevision|syncOptions|host
@@ -40,10 +40,10 @@ GIT_TOKEN=""                 # opcional: PAT do GitHub (se repos privados)
 #   - syncOptions    : opcoes extras (ex.: CreateNamespace=true)
 #   - host           : subdominio usado no DNS (api -> api.${DOMAIN})
 ARGO_PROJECTS=(
-  # API backend (myservice-api), apontando para a pasta k8s/backend do repo
-  "myservice-api|https://github.com/your-github-username/myservice-api.git|k8s/backend|main|CreateNamespace=true|api"
-  # Frontend (myfront-app), apontando para a pasta k8s/frontend do repo
-  "myfront-app|https://github.com/your-github-username/myfront-app.git|k8s/frontend|main||app"
+  # API backend ({SERVICE_NAME}), apontando para a pasta k8s/backend do repo
+  "{SERVICE_NAME}|https://github.com/{GITHUB_USER}/{GITHUB_REPO_BACK}.git|k8s/backend|main|CreateNamespace=true|api"
+  # Frontend ({FRONT_NAME}), apontando para a pasta k8s/frontend do repo
+  "{FRONT_NAME}|https://github.com/{GITHUB_USER}/{GITHUB_REPO_FRONT}.git|k8s/frontend|main||app"
 )
 
 NODE_IP=$(hostname -I | awk '{print $1}')
