@@ -38,11 +38,12 @@ KB="$ROOT_DIR/k8s/backend"
 KF="$ROOT_DIR/k8s/frontend"
 WF="$ROOT_DIR/.github/workflows/docker-build.yml"
 KREADME="$ROOT_DIR/k8s/README.md"
+CFGIT="$ROOT_DIR/configure-github-secrets.sh"
 
 # Substitui placeholders {VARIAVEL} pelos valores configurados acima
 for f in "$BOOT" "$KB/deployment.yaml" "$KB/service.yaml" "$KB/ingress.yaml" \
          "$KF/deployment.yaml" "$KF/service.yaml" "$KF/ingress.yaml" \
-         "$WF" "$KREADME"; do
+         "$WF" "$KREADME" "$CFGIT"; do
   sed -i "s|{DOMAIN}|$DOMAIN|g" "$f"
   sed -i "s|{SERVICE_NAME}|$SERVICE_NAME|g" "$f"
   sed -i "s|{FRONT_NAME}|$FRONT_NAME|g" "$f"
