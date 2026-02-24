@@ -172,6 +172,39 @@ Principais chaves que aparecem nos arquivos:
 - O pipeline de CI/CD (`.github/workflows/docker-build.yml`) está preparado para:
   - buildar/pushar a imagem backend,
   - chamar o ArgoCD para sincronizar a Application `{SERVICE_NAME}`.
+- As pastas `k8s/backend` e `k8s/frontend` deste template devem ser **copiadas para dentro dos repositórios reais** da API e do Front e commitadas lá (o ArgoCD sempre lê a pasta `k8s/` **dentro** do repo da aplicação).
+
+  Exemplo de estrutura final do repo backend:
+
+  ```text
+  {GITHUB_REPO_BACK}/
+    Dockerfile
+    .github/
+      workflows/
+        docker-build.yml
+    k8s/
+      backend/
+        deployment.yaml
+        service.yaml
+        ingress.yaml
+        rate-limit-middleware.yaml
+  ```
+
+  Exemplo de estrutura final do repo frontend:
+
+  ```text
+  {GITHUB_REPO_FRONT}/
+    Dockerfile
+    .github/
+      workflows/
+        docker-build.yml
+    k8s/
+      frontend/
+        deployment.yaml
+        service.yaml
+        ingress.yaml
+        rate-limit-middleware.yaml
+  ```
 
 Se quiser adicionar mais serviços, o fluxo é:
 
