@@ -32,8 +32,8 @@ jobs:
           push: true
           tags: |
             # Imagem enviada para o Docker Hub (ajuste nome do repo)
-            ${{ secrets.{DOCKERHUB_USERNAME} }}/{DOCKERHUB_REPO_BACK}:latest
-            ${{ secrets.{DOCKERHUB_USERNAME} }}/{DOCKERHUB_REPO_BACK}:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/{DOCKERHUB_REPO_BACK}:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/{DOCKERHUB_REPO_BACK}:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
