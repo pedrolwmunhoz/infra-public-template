@@ -206,6 +206,26 @@ YAML
 kubectl patch configmap argocd-cmd-params-cm -n argocd --type merge -p '{"data":{"server.insecure":"true"}}'
 kubectl -n argocd rollout restart deployment argocd-server
 kubectl -n argocd rollout status deployment/argocd-server --timeout=120s
+
+# Rate limit no ingress do ArgoCD
+kubectl apply -f - <<YAML
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rate-limit-argocd
+  namespace: argocd
+spec:
+  rateLimit:
+    average: 30
+    burst: 20
+    period: 1m
+    sourceCriterion:
+      ipStrategy:
+        depth: 1
+YAML
+kubectl annotate ingress argocd -n argocd \
+  'traefik.ingress.kubernetes.io/router.middlewares=argocd-rate-limit-argocd@kubernetescrd' \
+  --overwrite
 echo "ArgoCD OK"
 
 # ── [6/9] Monitoring (Prometheus + Grafana) ───────────────────────────────────
@@ -233,6 +253,27 @@ helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
   --set "grafana.ingress.annotations.cert-manager\.io/cluster-issuer=letsencrypt-prod" \
   --set "grafana.ingress.annotations.traefik\.ingress\.kubernetes\.io/router\.entrypoints=web\,websecure" \
   --set alertmanager.enabled=false
+
+# Rate limit no ingress do Grafana
+kubectl apply -f - <<YAML
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rate-limit-grafana
+  namespace: monitoring
+spec:
+  rateLimit:
+    average: 30
+    burst: 20
+    period: 1m
+    sourceCriterion:
+      ipStrategy:
+        depth: 1
+YAML
+kubectl rollout status deployment/monitoring-grafana -n monitoring --timeout=120s
+kubectl annotate ingress monitoring-grafana -n monitoring \
+  'traefik.ingress.kubernetes.io/router.middlewares=monitoring-rate-limit-grafana@kubernetescrd' \
+  --overwrite
 echo "Monitoring OK"
 
 # ── [7/9] Secret Docker Hub (image pull) ──────────────────────────────────────
