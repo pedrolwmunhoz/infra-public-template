@@ -48,6 +48,49 @@ ARGO_PROJECTS=(
 
 NODE_IP=$(hostname -I | awk '{print $1}')
 
+# ── [0/9] Firewall (UFW + iptables) ──────────────────────────────────────────
+echo "[0/9] Firewall..."
+ufw default deny incoming
+ufw default allow outgoing
+ufw default allow forward
+ufw allow 22/tcp
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw allow in on lo
+ufw --force enable
+echo "UFW OK"
+
+# Bloqueia portas sensiveis antes das chains do kube-router (que bypassam o UFW)
+# Permite loopback e CIDRs internos do cluster (pods: 10.42/16, services: 10.43/16)
+apt-get install -y -q iptables-persistent
+
+# 6443 (K8s API Server)
+iptables -I INPUT 2 -p tcp --dport 6443 -i lo -j ACCEPT
+iptables -I INPUT 3 -p tcp --dport 6443 -s 10.42.0.0/16 -j ACCEPT
+iptables -I INPUT 4 -p tcp --dport 6443 -s 10.43.0.0/16 -j ACCEPT
+iptables -I INPUT 5 -p tcp --dport 6443 -j DROP
+
+# 10250 (kubelet)
+iptables -I INPUT 6 -p tcp --dport 10250 -i lo -j ACCEPT
+iptables -I INPUT 7 -p tcp --dport 10250 -s 10.42.0.0/16 -j ACCEPT
+iptables -I INPUT 8 -p tcp --dport 10250 -s 10.43.0.0/16 -j ACCEPT
+iptables -I INPUT 9 -p tcp --dport 10250 -j DROP
+
+# 9100 (node_exporter / Prometheus)
+iptables -I INPUT 10 -p tcp --dport 9100 -i lo -j ACCEPT
+iptables -I INPUT 11 -p tcp --dport 9100 -s 10.42.0.0/16 -j ACCEPT
+iptables -I INPUT 12 -p tcp --dport 9100 -s 10.43.0.0/16 -j ACCEPT
+iptables -I INPUT 13 -p tcp --dport 9100 -j DROP
+
+iptables-save > /etc/iptables/rules.v4
+echo "iptables OK"
+
+# SSH hardening
+sed -i 's/PasswordAuthentication yes/PasswordAuthentication no/' /etc/ssh/sshd_config.d/50-cloud-init.conf 2>/dev/null || true
+sed -i 's/PermitRootLogin yes/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
+systemctl reload sshd
+echo "SSH hardening OK"
+
 # ── [1/9] k3s ────────────────────────────────────────────────────────────────
 echo "[1/9] k3s..."
 curl -sfL https://get.k3s.io | sh -
