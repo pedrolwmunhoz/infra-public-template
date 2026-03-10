@@ -5,8 +5,8 @@ metadata:
   namespace: default
 spec:
   rateLimit:
-    average: 100
-    burst: 200
+    average: 30
+    burst: 20
     period: 1m
     sourceCriterion:
       ipStrategy:
