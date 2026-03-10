@@ -1,7 +1,8 @@
 apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
-  name: rate-limit
+  name: rate-limit-{FRONT_NAME}
+  namespace: default
 spec:
   rateLimit:
     average: 100

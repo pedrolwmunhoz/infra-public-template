@@ -256,6 +256,7 @@ metadata:
   namespace: argocd
 spec:
   project: default
+  revisionHistoryLimit: 2
   source:
     repoURL: ${repoURL}
     path: ${path}${REV_LINE}

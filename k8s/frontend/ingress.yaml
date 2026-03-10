@@ -7,7 +7,7 @@ metadata:
     app: {FRONT_NAME}
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-    traefik.ingress.kubernetes.io/router.middlewares: default-rate-limit@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: default-rate-limit-{FRONT_NAME}@kubernetescrd
     cert-manager.io/cluster-issuer: letsencrypt-prod
 spec:
   ingressClassName: traefik

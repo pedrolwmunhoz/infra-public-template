@@ -6,8 +6,8 @@ metadata:
   labels:
     app: {SERVICE_NAME}
 spec:
-  replicas: 1
   revisionHistoryLimit: 2
+  replicas: 1
   selector:
     matchLabels:
       app: {SERVICE_NAME}

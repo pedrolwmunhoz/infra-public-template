@@ -12,11 +12,19 @@ ARGOCD_PASSWORD="{ARGOCD_PASS}"          # Senha admin do ArgoCD
 DOCKERHUB_TOKEN="{GH_SECRET_DOCKERHUB_TOKEN}"   # configure-template.sh injeta o valor daqui
 DOCKERHUB_USERNAME="{GH_SECRET_DOCKERHUB_USER}"
 ARGOCD_SERVER="argocd.{BASE_DOMAIN}"
+ARGOCD_WEBHOOK_SECRET="{ARGOCD_WEBHOOK_SECRET}"
+GIT_TOKEN="{GIT_TOKEN}"
 
 # Repositórios GitHub (owner/repo) onde configurar os secrets
 GITHUB_REPOS=(
   "{GITHUB_USER}/{GITHUB_REPO_BACK}"
   "{GITHUB_USER}/{GITHUB_REPO_FRONT}"    # opcional: remova se não usar repo separado de frontend
+)
+
+# Repositórios de config onde criar o webhook do ArgoCD
+WEBHOOK_REPOS=(
+  "{GITHUB_USER}/{GITHUB_REPO_BACK}-config"
+  "{GITHUB_USER}/{GITHUB_REPO_FRONT}-config"
 )
 
 # ---
@@ -52,4 +60,20 @@ for repo in "${GITHUB_REPOS[@]}"; do
   gh secret list --repo "$repo"
   echo ""
 done
+
+# Webhooks nos repos de config (dispara sync imediato no ArgoCD a cada push)
+echo "Configurando webhooks ArgoCD..."
+for repo in "${WEBHOOK_REPOS[@]}"; do
+  if [ -z "${repo// }" ]; then
+    continue
+  fi
+  echo "  $repo"
+  STATUS=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+    -H "Authorization: token ${GIT_TOKEN}" \
+    -H "Content-Type: application/json" \
+    -d "{\"name\":\"web\",\"active\":true,\"events\":[\"push\"],\"config\":{\"url\":\"https://${ARGOCD_SERVER}/api/webhook\",\"content_type\":\"json\",\"secret\":\"${ARGOCD_WEBHOOK_SECRET}\",\"insecure_ssl\":\"0\"}}" \
+    "https://api.github.com/repos/${repo}/hooks")
+  [ "$STATUS" = "201" ] && echo "    OK" || [ "$STATUS" = "422" ] && echo "    SKIP (já existe)" || echo "    AVISO: HTTP $STATUS"
+done
+echo "Webhooks OK"
 
