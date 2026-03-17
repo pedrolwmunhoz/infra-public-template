@@ -76,4 +76,3 @@ for repo in "${WEBHOOK_REPOS[@]}"; do
   [ "$STATUS" = "201" ] && echo "    OK" || [ "$STATUS" = "422" ] && echo "    SKIP (já existe)" || echo "    AVISO: HTTP $STATUS"
 done
 echo "Webhooks OK"
-

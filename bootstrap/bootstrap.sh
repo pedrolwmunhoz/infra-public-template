@@ -216,8 +216,8 @@ metadata:
   namespace: argocd
 spec:
   rateLimit:
-    average: 30
-    burst: 20
+    average: 300
+    burst: 200
     period: 1m
     sourceCriterion:
       ipStrategy:
