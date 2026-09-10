@@ -5,8 +5,9 @@ metadata:
   namespace: default
 spec:
   rateLimit:
-    average: 30
-    burst: 20
+    # SPA: HTML + CSS/JS/fonts no mesmo ingress; 80/60 estourava no reload.
+    average: 300
+    burst: 250
     period: 1m
     sourceCriterion:
       ipStrategy:
